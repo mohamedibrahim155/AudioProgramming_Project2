@@ -79,8 +79,9 @@ public:
 	void GLMToFMOD(const glm::vec3& in, FMOD_VECTOR& out);
 	void FMODToGLM(const FMOD_VECTOR& in, glm::vec3& out);
 
-	int AddPolygon(float direct, float reverb, bool doublesided,const std::vector<Vertex>& vertices, const glm::vec3& position);
+	int AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale);
 
+	void SetSoundPosition(const glm::vec3& modelPosition);
 
 private:
 	FMOD::System* _system = nullptr;
@@ -112,6 +113,9 @@ private:
 	 int m_LowPassDSP_layer;
 	 int m_DistortionDSP_layer;
 	 int m_ChorusPassDSP_layer;
+
+	 FMOD_VECTOR soundPos = { 0.f, 0.f, 0.f };
+	 FMOD_VECTOR soundVel = { 0.f, 0.f, 0.f };
 
 };
 

@@ -44,7 +44,7 @@ void AudioManager::Initialize()
 		}
 		return;
 	}
-	_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
+	//_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
 
 	if (_result != FMOD_OK)
 	{
@@ -66,6 +66,23 @@ void AudioManager::LoadSound(const char* audioFilePath)
 	//Adding Sounds to list
 	    FMOD::Sound* newSound=nullptr;
 		AddAudioSource(audioFilePath, newSound);
+}
+
+void AudioManager::Load3DAudio(const char* file)
+{
+	FMOD::Sound* newSound = nullptr;
+	Add3DAudioSource(file, newSound);
+
+	FMOD_MODE mode = FMOD_3D | FMOD_LOOP_NORMAL;
+	_result = _system->createSound(file, mode, 0, &LoadedAudioList[file].audio);   //Create Sound based on stream type
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to createSound in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	LoadedAudioList[file].audio->set3DMinMaxDistance(MIN_DISTANCE, MAX_DISTANCE); // SETTING MIN MAX for 3D audio
 }
 
 void AudioManager::SetIsStreaming(bool isStreaming)
@@ -147,16 +164,7 @@ void AudioManager::PlaySound(const char* audioFileName)
 
 void AudioManager::Play3DAudioSound(const char* audioFileName)
 {
-	FMOD_MODE mode = isStreaming ? FMOD_CREATESTREAM : FMOD_DEFAULT;
-	_result = _system->createSound(audioFileName, FMOD_3D | FMOD_LOOP_NORMAL, 0, &LoadedAudioList[audioFileName].audio);   //Create Sound based on stream type
-	if (_result != FMOD_OK)
-	{
-		FMODError(_result, __FILE__, __LINE__);
-		std::cout << "Error: Failed to createSound in the allocated filePath  " << std::endl;
-		return;
-	}
 
-	LoadedAudioList[audioFileName].audio->set3DMinMaxDistance(MIN_DISTANCE, MAX_DISTANCE); // SETTING MIN MAX for 3D audio
 
 	if (LoadedAudioList.find(audioFileName) != LoadedAudioList.end())
 	{
@@ -195,17 +203,15 @@ void AudioManager::Play3DAudioSound(const char* audioFileName)
 			return;
 		}
 
+		//SetListenerAttributes(glm::vec3(0), glm::vec3(0), glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
+		 soundVel = { 0.f, 0.f, 0.f };
 
-		FMOD_MODE mode = isLooping ? FMOD_LOOP_NORMAL : FMOD_DEFAULT;
-		if (IsChannelPlaying(audioFileName))
+		_result = LoadedAudioList[audioFileName].mychannel->channel->set3DAttributes(&soundPos, &soundVel);
+		if (_result != FMOD_OK)
 		{
-			_result = LoadedAudioList[audioFileName].mychannel->channel->setMode(mode);				//Looping audio in the channel based on bool
-			if (_result != FMOD_OK)
-			{
-				FMODError(_result, __FILE__, __LINE__);
-				std::cout << "Error: Failed to loopSound in the allocated filePath  " << std::endl;
-				return;
-			}
+			FMODError(_result, __FILE__, __LINE__);
+			std::cout << "Failed to Play3DAudioSound set3DAttributes : " << std::endl;
+			return;
 		}
 
 	}
@@ -273,7 +279,7 @@ void AudioManager::AddLowPassFilterOnChannel(int soundLayer, const char* _audioF
 		std::cout << "Error: Failed to AddLowPassFilterOnChannel in the allocated filePath  " << std::endl;
 		return;
 	}
-	_result = m_LowPassDSP->setParameterFloat(FMOD_DSP_LOWPASS_CUTOFF, 5000); // SETTING DEFAULT VALUES
+	//_result = m_LowPassDSP->setParameterFloat(FMOD_DSP_LOWPASS_CUTOFF, 5000); // SETTING DEFAULT VALUES
 	
 	if (_result != FMOD_OK)
 	{
@@ -304,7 +310,7 @@ void AudioManager::AddHighPassFilterOnChannel(int soundLayer, const char* _audio
 		std::cout << "Error: Failed to AddHighPassFilterOnChannel in the allocated filePath  " << std::endl;
 		return;
 	}
-	_result = m_HighPassDSP->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, 500); // SETTING DEFAULT VALUES
+	//_result = m_HighPassDSP->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, 500); // SETTING DEFAULT VALUES
 
 	if (_result != FMOD_OK)
 	{
@@ -335,7 +341,7 @@ void AudioManager::AddDistortionFilterOnChannel(int soundLayer, const char* _aud
 		std::cout << "Error: Failed to AddDistortionFilterOnChannel in the allocated filePath  " << std::endl;
 		return;
 	}
-	_result = m_DistortionDSP->setParameterFloat(FMOD_DSP_DISTORTION_LEVEL, 1.0f); // SETTING DEFAULT VALUES
+//	_result = m_DistortionDSP->setParameterFloat(FMOD_DSP_DISTORTION_LEVEL, 1.0f); // SETTING DEFAULT VALUES
 
 	if (_result != FMOD_OK)
 	{
@@ -366,9 +372,9 @@ void AudioManager::AddChorusPassOnChannel(int soundLayer, const char* _audioFile
 		std::cout << "Error: Failed to AddDistortionFilterOnChannel in the allocated filePath  " << std::endl;
 		return;
 	}
-	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_MIX, 50.f); // SETTING DEFAULT VALUES
-	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_RATE, 0.8f); // SETTING DEFAULT VALUES
-	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_DEPTH, 3.f); // SETTING DEFAULT VALUES
+	//_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_MIX, 50.f); // SETTING DEFAULT VALUES
+	//_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_RATE, 0.8f); // SETTING DEFAULT VALUES
+	//_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_DEPTH, 3.f); // SETTING DEFAULT VALUES
 
 	
 	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
@@ -564,11 +570,11 @@ void AudioManager::FMODToGLM(const FMOD_VECTOR& in, glm::vec3& out)
 	out.z = in.z;
 }
 
-int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position)
+int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale)
 {
 	FMOD_RESULT result;
 	int index;
-
+	result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
 	// Add the polygon
 	int numVertices = vertices.size();
 	FMOD_VECTOR* fmodVertices = (FMOD_VECTOR*)malloc(sizeof(FMOD_VECTOR) * numVertices);
@@ -581,7 +587,7 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	{
 		FMODError(_result, __FILE__, __LINE__);
 		std::cout << "Error: Failed to AddPolygon in the allocated filePath  " << std::endl;
-		return;
+		return -1;
 	}
 
 	// Set the position
@@ -592,10 +598,9 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	{
 		FMODError(_result, __FILE__, __LINE__);
 		std::cout << "Error: Failed to AddPolygon -> setPosition in the allocated filePath  " << std::endl;
-		return;
+		return-1;
 	}
 
-	glm::vec3 scale(3.f); // you can get the scale of the model as a parameter and pass it
 	FMOD_VECTOR fmodScale;
 	GLMToFMOD(scale, fmodScale);
 	result = m_Geometry->setScale(&fmodScale);
@@ -603,7 +608,7 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	{
 		FMODError(_result, __FILE__, __LINE__);
 		std::cout << "Error: Failed to AddPolygon -> setScale in the allocated filePath  " << std::endl;
-		return;
+		return-1;
 	}
 
 	
@@ -611,6 +616,11 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	m_Geometry->setActive(true);
 
 	return index;
+}
+
+void AudioManager::SetSoundPosition(const glm::vec3& modelPosition)
+{
+	GLMToFMOD(modelPosition, soundPos);
 }
 
 // Pause audio based on the file name ( if the file exist in the dictionary)

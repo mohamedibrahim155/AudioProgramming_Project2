@@ -72,12 +72,23 @@ void ApplicationRenderer::WindowInitialize(int width, int height,  std::string w
 
 void ApplicationRenderer::Start()
 {
-
+  
 
      Model* Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
-     Sphere->transform.position.x += 2;
+     Sphere->transform.position.x += 0;
 
      Model* dir = new Model(*Sphere);
+     dir->isVisible = false;
+
+     Plane = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane->transform.position.x -= 10;
+     Plane->transform.scale = glm::vec3(3.0f);
+
+     Plane2 = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane2->transform.position.x += 10;
+     Plane2->transform.scale = glm::vec3(3.0f);
+
+
 
      Light directionLight;
      directionLight.lightType = LightType::DIRECTION_LIGHT;
@@ -89,6 +100,10 @@ void ApplicationRenderer::Start()
 
      //Mesh Renderer
      render.AddModelsAndShader(Sphere,defaultShader);
+     render.AddModelsAndShader(Plane,defaultShader);
+     render.AddModelsAndShader(Plane2,defaultShader);
+
+
      render.AddModelsAndShader(dir,lightShader);
   
 
@@ -96,8 +111,20 @@ void ApplicationRenderer::Start()
      lightManager.AddNewLight(directionLight);
 
      lightManager.SetUniforms(defaultShader->ID);
+
+
+     AudioId Boss("Audio/boss.mp3", Sphere->transform.position);
+
+     audioHandler.LoadModelAudio(Boss);
+     audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
+     audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
+  
 }
 
+void ApplicationRenderer::PreRender()
+{
+    audioHandler.UpdatePosition(camera.Position, -camera.Front, camera.Up, -1.0f);
+}
 void ApplicationRenderer::Render()
 {
     Start();
@@ -108,6 +135,7 @@ void ApplicationRenderer::Render()
         Clear();
 
 
+     
         float currentFrame = static_cast<float>(glfwGetTime());
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
@@ -119,7 +147,7 @@ void ApplicationRenderer::Render()
         glm::mat4 _view = camera.GetViewMatrix();
 
 
-     
+        PreRender();
 
         defaultShader->Bind();
         lightManager.UpdateUniformValues(defaultShader->ID);
@@ -142,6 +170,7 @@ void ApplicationRenderer::Render()
 
     glfwTerminate();
 }
+
 
 void ApplicationRenderer::Clear()
 {

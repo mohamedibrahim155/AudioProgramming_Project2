@@ -12,7 +12,7 @@
 #include"LightManager.h"
 #include "Random.h"
 
-
+#include "AudioHandler.h"
 #include "GraphicsRender.h"
 
 
@@ -31,6 +31,7 @@ public:
 	void WindowInitialize(int width, int height,  std::string windowName ="Window");
 	
 	void Start();
+	void PreRender();
 	void Render();
 	void Clear();
 
@@ -60,6 +61,15 @@ private:
 	 float lastFrame;
 
 	 bool firstMouse;
+
+	 AudioHandler audioHandler;
+
+
+
+#pragma region Models
+	 Model* Plane;
+	 Model* Plane2;
+#pragma endregion
 
 };
 
