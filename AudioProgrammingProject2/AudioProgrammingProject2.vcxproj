@@ -198,6 +198,7 @@
     <ClInclude Include="src\VertexArray.h" />
     <ClInclude Include="src\VertexBuffer.h" />
     <ClInclude Include="src\VertexBufferLayout.h" />
+    <ClInclude Include="src\Vertex.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\color.frag" />

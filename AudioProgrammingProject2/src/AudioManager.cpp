@@ -31,6 +31,34 @@ void AudioManager::Initialize()
 		}
 		return;
 	}
+
+	_result = _system->setGeometrySettings(2000.0f); /// SET GEOMENTRY
+	if (_result != FMOD_OK)
+	{
+		std::cout << "Error : Failed to setGeomentry system " << std::endl;
+
+		_result = _system->close();
+		if (_result != FMOD_OK)
+		{
+			std::cout << "Error : Failed to Close the system" << std::endl;
+		}
+		return;
+	}
+	_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
+
+	if (_result != FMOD_OK)
+	{
+		std::cout << "Error : Failed to Create geomentry system " << std::endl;
+
+		_result = _system->close();
+		if (_result != FMOD_OK)
+		{
+			std::cout << "Error : Failed to Close the system" << std::endl;
+		}
+		return;
+	}
+
+
 }
 
 void AudioManager::LoadSound(const char* audioFilePath)
@@ -117,6 +145,72 @@ void AudioManager::PlaySound(const char* audioFileName)
 	}
 }
 
+void AudioManager::Play3DAudioSound(const char* audioFileName)
+{
+	FMOD_MODE mode = isStreaming ? FMOD_CREATESTREAM : FMOD_DEFAULT;
+	_result = _system->createSound(audioFileName, FMOD_3D | FMOD_LOOP_NORMAL, 0, &LoadedAudioList[audioFileName].audio);   //Create Sound based on stream type
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to createSound in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	LoadedAudioList[audioFileName].audio->set3DMinMaxDistance(MIN_DISTANCE, MAX_DISTANCE); // SETTING MIN MAX for 3D audio
+
+	if (LoadedAudioList.find(audioFileName) != LoadedAudioList.end())
+	{
+
+		_result = _system->playSound(LoadedAudioList[audioFileName].audio, 0, false, &LoadedAudioList[audioFileName].mychannel->channel); //playing audio in the loaded list
+
+		if (_result != FMOD_OK) {
+			std::cout << "Failed to set loop mode: " << std::endl;
+			return;
+		}
+		if (_result != FMOD_OK)
+		{
+			std::cout << "Error : Failed to play the sound";
+			FMODError(_result, __FILE__, __LINE__);
+			_result = LoadedAudioList[audioFileName].audio->release();
+			if (_result != FMOD_OK)
+			{
+				FMODError(_result, __FILE__, __LINE__);
+				std::cout << "Error: Failed to release in Play()   " << std::endl;
+
+			}
+			_result = _system->close();
+			if (_result != FMOD_OK)
+			{
+				FMODError(_result, __FILE__, __LINE__);
+				std::cout << "Error: Failed to close system in Play()   " << std::endl;
+
+			}
+
+			_result = _system->release();
+			if (_result != FMOD_OK)
+			{
+				FMODError(_result, __FILE__, __LINE__);
+				std::cout << "Error: Failed to release system  in Play()   " << std::endl;
+			}
+			return;
+		}
+
+
+		FMOD_MODE mode = isLooping ? FMOD_LOOP_NORMAL : FMOD_DEFAULT;
+		if (IsChannelPlaying(audioFileName))
+		{
+			_result = LoadedAudioList[audioFileName].mychannel->channel->setMode(mode);				//Looping audio in the channel based on bool
+			if (_result != FMOD_OK)
+			{
+				FMODError(_result, __FILE__, __LINE__);
+				std::cout << "Error: Failed to loopSound in the allocated filePath  " << std::endl;
+				return;
+			}
+		}
+
+	}
+}
+
 
 
 //Add and sets audio path in a dictionary
@@ -131,6 +225,392 @@ void AudioManager::AddAudioSource(const char* audioFilePath, FMOD::Sound* sound)
 	source.mychannel->channel->setVolume(source.mychannel->volume);
 	source.mychannel->channel->setPan(source.mychannel->pan);
 	LoadedAudioList[audioFilePath] = source;
+}
+
+void AudioManager::Add3DAudioSource(const char* _audioFilePath, FMOD::Sound* _sound)
+{
+	AudioSource source;
+	source.pathName = _audioFilePath;
+	source.audio = _sound;
+	source.mychannel = new MyChannel;
+	source.mychannel->channel = nullptr;
+	source.mychannel->channel->setPitch(source.mychannel->pitch);
+	source.mychannel->channel->setVolume(source.mychannel->volume);
+	source.mychannel->channel->setPan(source.mychannel->pan);
+	LoadedAudioList[_audioFilePath] = source;
+}
+
+void AudioManager::AddReverbFilterOnChannel(int soundLayer, const char* _audioFilePath)
+{
+
+	_result = _system->createDSPByType(FMOD_DSP_TYPE_SFXREVERB, &m_ReverbDSP);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddReverbFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			m_ReverbDSP_layer = soundLayer;
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(soundLayer, m_ReverbDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call AddReverbFilterOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::AddLowPassFilterOnChannel(int soundLayer, const char* _audioFilePath)
+{
+	_result = _system->createDSPByType(FMOD_DSP_TYPE_LOWPASS, &m_LowPassDSP);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddLowPassFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	_result = m_LowPassDSP->setParameterFloat(FMOD_DSP_LOWPASS_CUTOFF, 5000); // SETTING DEFAULT VALUES
+	
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddLowPassFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			m_LowPassDSP_layer = soundLayer;
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(soundLayer, m_LowPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call AddLowPassFilterOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::AddHighPassFilterOnChannel(int soundLayer, const char* _audioFilePath)
+{
+	_result = _system->createDSPByType(FMOD_DSP_TYPE_HIGHPASS, &m_HighPassDSP);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddHighPassFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	_result = m_HighPassDSP->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, 500); // SETTING DEFAULT VALUES
+
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddHighPassFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			m_HighPassDSP_layer = soundLayer;
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(soundLayer, m_HighPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call AddHighPassFilterOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::AddDistortionFilterOnChannel(int soundLayer, const char* _audioFilePath)
+{
+	_result = _system->createDSPByType(FMOD_DSP_TYPE_DISTORTION, &m_DistortionDSP);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddDistortionFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	_result = m_DistortionDSP->setParameterFloat(FMOD_DSP_DISTORTION_LEVEL, 1.0f); // SETTING DEFAULT VALUES
+
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddDistortionFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			m_DistortionDSP_layer = soundLayer;
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(soundLayer, m_DistortionDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call AddDistortionFilterOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::AddChorusPassOnChannel(int soundLayer, const char* _audioFilePath)
+{
+	_result = _system->createDSPByType(FMOD_DSP_TYPE_CHORUS, &m_ChorusPassDSP);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddDistortionFilterOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_MIX, 50.f); // SETTING DEFAULT VALUES
+	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_RATE, 0.8f); // SETTING DEFAULT VALUES
+	_result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_DEPTH, 3.f); // SETTING DEFAULT VALUES
+
+	
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			m_ChorusPassDSP_layer = soundLayer;
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(soundLayer, m_ReverbDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call AddDistortionFilterOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::SetReverbValuesOnChannel(const char* _audioFilePath, float& decay, float& density, float& diffusion)
+{
+	FMOD_RESULT result;
+
+	// Concert Hall, settings, decay 3900ms, density, diffusion set to 100
+
+	result = m_ReverbDSP->setParameterFloat(FMOD_DSP_SFXREVERB_DECAYTIME, decay);
+	result = m_ReverbDSP->setParameterFloat(FMOD_DSP_SFXREVERB_DENSITY, density);
+	result = m_ReverbDSP->setParameterFloat(FMOD_DSP_SFXREVERB_DIFFUSION, diffusion);
+
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetReverbValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(m_ReverbDSP_layer, m_ChorusPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call SetReverbValuesOnChannel() " << std::endl;
+	}
+
+}
+
+void AudioManager::SetLowPassFilterValuesOnChannel(const char* _audioFilePath, float& limit)
+{
+	FMOD_RESULT result = m_LowPassDSP->setParameterFloat(FMOD_DSP_LOWPASS_CUTOFF, limit);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetLowPassFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(m_LowPassDSP_layer, m_LowPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call SetLowPassFilterValuesOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::SetHighPassFilterValuesOnChannel(const char* _audioFilePath, float& limit)
+{
+	FMOD_RESULT result = m_HighPassDSP->setParameterFloat(FMOD_DSP_HIGHPASS_CUTOFF, limit);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetHighPassFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(m_HighPassDSP_layer, m_HighPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call SetHighPassFilterValuesOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::SetDistortionLevelFilterValuesOnChannel(const char* _audioFilePath, float& level)
+{
+	FMOD_RESULT result = m_DistortionDSP->setParameterFloat(FMOD_DSP_DISTORTION_LEVEL, level);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetDistortionLevelFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(m_DistortionDSP_layer, m_DistortionDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call SetDistortionLevelFilterValuesOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::SetChorusPassValuesOnChannel(const char* _audioFilePath, float& mix, float& rate, float& depth)
+{
+	FMOD_RESULT result;
+	result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_MIX, mix);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetDistortionLevelFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_RATE, rate);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetDistortionLevelFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+	result = m_ChorusPassDSP->setParameterFloat(FMOD_DSP_CHORUS_DEPTH, depth);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetDistortionLevelFilterValuesOnChannel in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	if (LoadedAudioList.find(_audioFilePath) != LoadedAudioList.end())
+	{
+		if (LoadedAudioList[_audioFilePath].mychannel)
+		{
+			LoadedAudioList[_audioFilePath].mychannel->channel->addDSP(m_ChorusPassDSP_layer, m_ChorusPassDSP);
+		}
+	}
+	else
+	{
+		std::cout << "Error : audioFile does not exist to call SetDistortionLevelFilterValuesOnChannel() " << std::endl;
+	}
+}
+
+void AudioManager::SetListenerAttributes(const glm::vec3& position, const glm::vec3& velocity, const glm::vec3& forward, const glm::vec3& up)
+{
+	FMOD_VECTOR fmodPosition;
+	FMOD_VECTOR fmodVelocity;
+	FMOD_VECTOR fmodForward;
+	FMOD_VECTOR fmodUp;
+
+	GLMToFMOD(position, fmodPosition);
+	GLMToFMOD(velocity, fmodVelocity);
+	GLMToFMOD(forward, fmodForward);
+	GLMToFMOD(up, fmodUp);
+
+	FMOD_RESULT result = _system->set3DListenerAttributes(0, &fmodPosition, &fmodVelocity, &fmodForward, &fmodUp);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to SetListenerAttributes in the allocated filePath  " << std::endl;
+		return;
+	}
+
+
+	float direct, reverb;
+	FMOD_VECTOR origin;
+
+	GLMToFMOD(glm::vec3(0.f), origin);
+	_system->getGeometryOcclusion(&origin, &fmodPosition, &direct, &reverb);
+	printf("ListenerPosition: %.2f, %.2f, %.2f | direct: %.4f, reverb: %.4f\n", position.x, position.y, position.z, direct, reverb);
+}
+
+void AudioManager::GLMToFMOD(const glm::vec3& in, FMOD_VECTOR& out)
+{
+	out.x = in.x;
+	out.y = in.y;
+	out.z = in.z;
+}
+void AudioManager::FMODToGLM(const FMOD_VECTOR& in, glm::vec3& out)
+{
+	out.x = in.x;
+	out.y = in.y;
+	out.z = in.z;
+}
+
+int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position)
+{
+	FMOD_RESULT result;
+	int index;
+
+	// Add the polygon
+	int numVertices = vertices.size();
+	FMOD_VECTOR* fmodVertices = (FMOD_VECTOR*)malloc(sizeof(FMOD_VECTOR) * numVertices);
+	for (int i = 0; i < numVertices; i++) {
+		GLMToFMOD(vertices[i].Position, fmodVertices[i]);
+	}
+
+	result = m_Geometry->addPolygon(direct, reverb, doublesided, numVertices, fmodVertices, &index);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	// Set the position
+	FMOD_VECTOR fmodPosition;
+	GLMToFMOD(position, fmodPosition);
+	result = m_Geometry->setPosition(&fmodPosition);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon -> setPosition in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	glm::vec3 scale(3.f); // you can get the scale of the model as a parameter and pass it
+	FMOD_VECTOR fmodScale;
+	GLMToFMOD(scale, fmodScale);
+	result = m_Geometry->setScale(&fmodScale);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon -> setScale in the allocated filePath  " << std::endl;
+		return;
+	}
+
+	
+
+	m_Geometry->setActive(true);
+
+	return index;
 }
 
 // Pause audio based on the file name ( if the file exist in the dictionary)

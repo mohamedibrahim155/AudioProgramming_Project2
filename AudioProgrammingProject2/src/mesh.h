@@ -19,17 +19,8 @@
 #include "VertexBufferLayout.h"
 #include "VertexArray.h"
 #include"Textures.h"
-
+#include "Vertex.h"
 #define MAX_BONE_INFLUENCE 4
-struct Vertex
-{
-
-    glm::vec3 Position;
-    glm::vec3 Normal;
-    glm::vec2 TexCoords;
-    glm::vec4 vRgb;
-
-};
 
 
 
