@@ -19,7 +19,7 @@ void AudioManager::Initialize()
 		return;
 	}
 	//Initializing a FMOD 
-	_result = _system->init(1,FMOD_INIT_NORMAL,nullptr);
+	_result = _system->init(10,FMOD_INIT_NORMAL,nullptr);
 	if (_result!=FMOD_OK)
 	{
 		std::cout << "Error : Failed to Iniitialize system " << std::endl;
@@ -98,7 +98,7 @@ void AudioManager::SetIsAudioLooping(bool isLooping)
 	this->isLooping = isLooping;
 	
 }
-void AudioManager::PlaySound(const char* audioFileName)
+void AudioManager::PlaySoundFile(const char* audioFileName)
 {
 	FMOD_MODE mode = isStreaming ? FMOD_CREATESTREAM : FMOD_DEFAULT;
 	_result = _system->createSound(audioFileName, mode, 0, &LoadedAudioList[audioFileName].audio);   //Create Sound based on stream type
@@ -572,9 +572,9 @@ void AudioManager::FMODToGLM(const FMOD_VECTOR& in, glm::vec3& out)
 
 int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale)
 {
-	FMOD_RESULT result;
+	
 	int index;
-	result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
+	_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
 	// Add the polygon
 	int numVertices = vertices.size();
 	FMOD_VECTOR* fmodVertices = (FMOD_VECTOR*)malloc(sizeof(FMOD_VECTOR) * numVertices);
@@ -582,7 +582,7 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 		GLMToFMOD(vertices[i].Position, fmodVertices[i]);
 	}
 
-	result = m_Geometry->addPolygon(direct, reverb, doublesided, numVertices, fmodVertices, &index);
+	_result = m_Geometry->addPolygon(direct, reverb, doublesided, numVertices, fmodVertices, &index);
 	if (_result != FMOD_OK)
 	{
 		FMODError(_result, __FILE__, __LINE__);
@@ -593,7 +593,7 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	// Set the position
 	FMOD_VECTOR fmodPosition;
 	GLMToFMOD(position, fmodPosition);
-	result = m_Geometry->setPosition(&fmodPosition);
+	_result = m_Geometry->setPosition(&fmodPosition);
 	if (_result != FMOD_OK)
 	{
 		FMODError(_result, __FILE__, __LINE__);
@@ -603,7 +603,7 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 
 	FMOD_VECTOR fmodScale;
 	GLMToFMOD(scale, fmodScale);
-	result = m_Geometry->setScale(&fmodScale);
+	_result = m_Geometry->setScale(&fmodScale);
 	if (_result != FMOD_OK)
 	{
 		FMODError(_result, __FILE__, __LINE__);

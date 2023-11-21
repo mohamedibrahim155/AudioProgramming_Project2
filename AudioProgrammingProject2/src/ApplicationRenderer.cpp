@@ -75,10 +75,10 @@ void ApplicationRenderer::Start()
   
 
      Model* Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
-     Sphere->transform.position.x += 0;
+     Sphere->transform.position.x += 5;
 
      Model* dir = new Model(*Sphere);
-     dir->isVisible = false;
+   
 
      Plane = new Model((char*)"Models/Plane/Plane.obj", true);
      Plane->transform.position.x -= 10;
@@ -113,17 +113,28 @@ void ApplicationRenderer::Start()
      lightManager.SetUniforms(defaultShader->ID);
 
 
-     AudioId Boss("Audio/boss.mp3", Sphere->transform.position);
+      Boss = new AudioId("Audio/boss.mp3", Sphere->transform.position);
+      Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
 
-     audioHandler.LoadModelAudio(Boss);
-     audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
-     audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
-  
+    audioHandler.LoadModelAudio(*Boss);
+    audioHandler.PlayAudio(*Boss);
+    audioHandler.LoadModelAudio(*Jaguar);  
+    audioHandler.PlayAudio(*Jaguar);
+    //
+    audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
+    audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
+
+
 }
 
 void ApplicationRenderer::PreRender()
 {
+    
     audioHandler.UpdatePosition(camera.Position, -camera.Front, camera.Up, -1.0f);
+   
+  
+
+
 }
 void ApplicationRenderer::Render()
 {
@@ -219,7 +230,11 @@ void ApplicationRenderer::ProcessInput(GLFWwindow* window)
  {  
          if (key == GLFW_KEY_V && action == GLFW_PRESS)
          {
-             std::cout << "V pressed" << std::endl;
+           //  audioHandler.audioManager->PlaySoundFile(Boss->audioPath.c_str());
+         }
+         if (key == GLFW_KEY_B && action == GLFW_PRESS)
+         {
+           
          }
      
  }

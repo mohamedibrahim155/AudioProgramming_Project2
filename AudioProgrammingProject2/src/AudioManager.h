@@ -39,7 +39,7 @@ public:
 	void Update();
 
 
-	void PlaySound(const char* _audioFilePath);
+	void PlaySoundFile(const char* _audioFilePath);
 	void AddAudioSource(const char* _audioFilePath,FMOD::Sound* _sound);
 
 

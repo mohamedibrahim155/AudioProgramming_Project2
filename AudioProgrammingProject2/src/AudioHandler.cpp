@@ -35,9 +35,13 @@ void AudioHandler::LoadModelAudio(AudioId& audio)
 {
 	audioManager->Load3DAudio(audio.audioPath.c_str());
 	audioManager->SetSoundPosition(audio.modelPosition);
-	audioManager->Play3DAudioSound(audio.audioPath.c_str());
 
 	AddDSP(audio.audioPath.c_str());
+}
+
+void AudioHandler::PlayAudio(AudioId& audio)
+{
+	audioManager->Play3DAudioSound(audio.audioPath.c_str());
 }
 
 void AudioHandler::UpdatePosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp, const float& ModelposX)

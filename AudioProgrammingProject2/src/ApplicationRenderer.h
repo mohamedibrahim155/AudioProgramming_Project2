@@ -71,5 +71,9 @@ private:
 	 Model* Plane2;
 #pragma endregion
 
+	 AudioId* Boss;
+	 AudioId* Jaguar;
+
+
 };
 

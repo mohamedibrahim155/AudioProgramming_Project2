@@ -22,6 +22,7 @@ public:
 	void LoadAudios();
 	void LoadModelAudio(const glm::vec3& modelPosition);
 	void LoadModelAudio(AudioId& audio);
+	void PlayAudio(AudioId& audio);
 	void UpdatePosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp , const float& ModelposX);
 
 	void AddPolygonToManager(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale = { 1.0f,1.0f,1.0f });
@@ -48,9 +49,9 @@ public:
 	float gChorusRateValue = 1.0f;
 	float gChorusDepthValue = 7.f;
 
-
-private:
 	AudioManager* audioManager;
+private:
+
 
 	std::string audioPath;
 
