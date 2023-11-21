@@ -554,7 +554,7 @@ void AudioManager::SetListenerAttributes(const glm::vec3& position, const glm::v
 
 	GLMToFMOD(glm::vec3(0.f), origin);
 	_system->getGeometryOcclusion(&origin, &fmodPosition, &direct, &reverb);
-	printf("ListenerPosition: %.2f, %.2f, %.2f | direct: %.4f, reverb: %.4f\n", position.x, position.y, position.z, direct, reverb);
+	//printf("ListenerPosition: %.2f, %.2f, %.2f | direct: %.4f, reverb: %.4f\n", position.x, position.y, position.z, direct, reverb);
 }
 
 void AudioManager::GLMToFMOD(const glm::vec3& in, FMOD_VECTOR& out)
@@ -621,6 +621,23 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 void AudioManager::SetSoundPosition(const glm::vec3& modelPosition)
 {
 	GLMToFMOD(modelPosition, soundPos);
+}
+
+void AudioManager::SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position)
+{
+	if (LoadedAudioList.find(audioFilename)!=LoadedAudioList.end())
+	{
+		FMOD_VECTOR fmodPosition;
+		FMOD_VECTOR fmodVelocity = { 5.0f, 0.0f, 0.0f };
+		GLMToFMOD(position, fmodPosition);
+		FMOD_RESULT result = LoadedAudioList[audioFilename].mychannel->channel->set3DAttributes(&fmodPosition, &fmodVelocity);
+		if (_result != FMOD_OK)
+		{
+			FMODError(_result, __FILE__, __LINE__);
+			std::cout << "Error: Failed to SetPositionAttributeonChannel in the allocated filePath  " << std::endl;
+			return;
+		}
+	}
 }
 
 // Pause audio based on the file name ( if the file exist in the dictionary)

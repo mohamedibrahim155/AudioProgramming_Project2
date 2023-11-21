@@ -44,7 +44,7 @@ void AudioHandler::PlayAudio(AudioId& audio)
 	audioManager->Play3DAudioSound(audio.audioPath.c_str());
 }
 
-void AudioHandler::UpdatePosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp, const float& ModelposX)
+void AudioHandler::UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp, const float& ModelposX)
 {
 	audioManager->SetListenerAttributes(camPos, m_Velocity, camFront, camUp);
 
@@ -79,4 +79,9 @@ void AudioHandler::SetDSP(const char* audioPath)
 	audioManager->SetHighPassFilterValuesOnChannel(audioPath, gHighPassValue);
 	audioManager->SetDistortionLevelFilterValuesOnChannel(audioPath, gDistortionValue);
 	audioManager->SetChorusPassValuesOnChannel(audioPath,gChorusMixValue, gChorusRateValue, gChorusDepthValue);
+}
+
+void AudioHandler::UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position)
+{
+	audioManager->SetPositionAttributeonChannel(audio.audioPath.c_str(), position);
 }

@@ -73,8 +73,7 @@ void ApplicationRenderer::WindowInitialize(int width, int height,  std::string w
 void ApplicationRenderer::Start()
 {
   
-
-     Model* Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
+     Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
      Sphere->transform.position.x += 5;
 
      Model* dir = new Model(*Sphere);
@@ -129,9 +128,10 @@ void ApplicationRenderer::Start()
 
 void ApplicationRenderer::PreRender()
 {
-    
-    audioHandler.UpdatePosition(camera.Position, -camera.Front, camera.Up, -1.0f);
-   
+    Sphere->transform.position.x += 5 * deltaTime;
+    audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
+
+    audioHandler.UpdatePositionOnChannel(*Boss, Sphere->transform.position);
   
 
 

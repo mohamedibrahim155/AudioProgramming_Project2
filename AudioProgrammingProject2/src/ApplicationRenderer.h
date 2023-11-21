@@ -69,6 +69,7 @@ private:
 #pragma region Models
 	 Model* Plane;
 	 Model* Plane2;
+	 Model* Sphere;
 #pragma endregion
 
 	 AudioId* Boss;

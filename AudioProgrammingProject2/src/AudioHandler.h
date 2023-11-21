@@ -23,7 +23,7 @@ public:
 	void LoadModelAudio(const glm::vec3& modelPosition);
 	void LoadModelAudio(AudioId& audio);
 	void PlayAudio(AudioId& audio);
-	void UpdatePosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp , const float& ModelposX);
+	void UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp , const float& ModelposX);
 
 	void AddPolygonToManager(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale = { 1.0f,1.0f,1.0f });
 
@@ -33,7 +33,7 @@ public:
 	void AddDSP(const char* audioPath);
 	void SetDSP(const char* audioPath);
 
-
+	void UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position);
 
 
 	float gDecayValue = .1f;
