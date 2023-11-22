@@ -77,30 +77,93 @@ void ApplicationRenderer::Start()
      Sphere->transform.position.x += 5;
 
      Model* dir = new Model(*Sphere);
+     dir->isVisible = false;
    
 
      Plane = new Model((char*)"Models/Plane/Plane.obj", true);
-     Plane->transform.position.x -= 10;
+     Plane->transform.position.x -= 2;
      Plane->transform.scale = glm::vec3(3.0f);
 
      Plane2 = new Model((char*)"Models/Plane/Plane.obj", true);
      Plane2->transform.position.x += 10;
      Plane2->transform.scale = glm::vec3(3.0f);
 
+     Model* interiorAsset1 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-0.obj", true);
+     Model* interiorAsset2 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-1.obj", true);
+     Model* interiorAsset3 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-2.obj", true);
+     Model* interiorAsset4 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-3.obj", true);
+     Model* interiorAsset5 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-4.obj", true);
+     Model* interiorAsset6 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-5.obj", true);
+     Model* interiorAsset7 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-6.obj", true);
+     Model* interiorAsset8 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-7.obj", true);
+     Model* interiorAsset9 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-8.obj", true);
+     Model* interiorAsset10 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-9.obj", true);
+     Model* interiorAsset11 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-10.obj", true);
+     Model* interiorAsset12 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-11.obj", true);
+     Model* interiorAsset13 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-12.obj", true);
+     Model* interiorAsset14 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-13.obj", true);
+     Model* interiorAsset15 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-14.obj", true);
+     Model* interiorAsset16 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-15.obj", true);
+     Model* interiorAsset17 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-16.obj", true);
+     Model* interiorAsset18 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-17.obj", true);
+     Model* TV = new Model("Models/TV/TV.obj", true);
 
+
+     interiorAsset1->transform.SetScale(glm::vec3(3));
+     interiorAsset2->transform.SetScale(glm::vec3(3));
+     interiorAsset3->transform.SetScale(glm::vec3(3));
+     interiorAsset4->transform.SetScale(glm::vec3(3));
+     interiorAsset5->transform.SetScale(glm::vec3(3));
+     interiorAsset6->transform.SetScale(glm::vec3(3));
+     interiorAsset7->transform.SetScale(glm::vec3(3));
+     interiorAsset8->transform.SetScale(glm::vec3(3));
+     interiorAsset9->transform.SetScale(glm::vec3(3));
+     interiorAsset10->transform.SetScale(glm::vec3(3));
+     interiorAsset11->transform.SetScale(glm::vec3(3));
+     interiorAsset12->transform.SetScale(glm::vec3(3));
+     interiorAsset13->transform.SetScale(glm::vec3(3));
+     interiorAsset14->transform.SetScale(glm::vec3(3));
+     interiorAsset15->transform.SetScale(glm::vec3(3));
+     interiorAsset16->transform.SetScale(glm::vec3(3));
+     interiorAsset17->transform.SetScale(glm::vec3(3));
+     interiorAsset18->transform.SetScale(glm::vec3(3));
+
+     //TV Model
+     TV->transform.SetPosition(glm::vec3(-0.5f,1.1f,-2.1f));
+     TV->transform.SetRotation(glm::vec3(0, -90, 0));
+     TV->transform.SetScale(glm::vec3(10));
 
      Light directionLight;
      directionLight.lightType = LightType::DIRECTION_LIGHT;
      directionLight.lightModel = dir;
-     directionLight.ambient = glm::vec3(0.1f);
-     directionLight.diffuse = glm::vec3(0.1f);
-     directionLight.specular = glm::vec3(0.1f);
+     directionLight.ambient =  glm::vec3(0.5f);
+     directionLight.diffuse =  glm::vec3(0.5f);
+     directionLight.specular = glm::vec3(0.5f);
 
 
      //Mesh Renderer
-     render.AddModelsAndShader(Sphere,defaultShader);
-     render.AddModelsAndShader(Plane,defaultShader);
-     render.AddModelsAndShader(Plane2,defaultShader);
+     render.AddModelsAndShader(Sphere, lightShader);
+     render.AddModelsAndShader(Plane, lightShader);
+     render.AddModelsAndShader(Plane2, lightShader);
+
+     render.AddModelsAndShader(interiorAsset1,defaultShader);
+     render.AddModelsAndShader(interiorAsset2,defaultShader);
+     render.AddModelsAndShader(interiorAsset3,defaultShader);
+     render.AddModelsAndShader(interiorAsset4,defaultShader);
+     render.AddModelsAndShader(interiorAsset5,defaultShader);
+     render.AddModelsAndShader(interiorAsset6,defaultShader);
+     render.AddModelsAndShader(interiorAsset7,defaultShader);
+     render.AddModelsAndShader(interiorAsset8,defaultShader);
+     render.AddModelsAndShader(interiorAsset9,defaultShader);
+     render.AddModelsAndShader(interiorAsset10,defaultShader);
+     render.AddModelsAndShader(interiorAsset11,defaultShader);
+     render.AddModelsAndShader(interiorAsset12,defaultShader);
+     render.AddModelsAndShader(interiorAsset13,defaultShader);
+     render.AddModelsAndShader(interiorAsset15,defaultShader);
+     render.AddModelsAndShader(interiorAsset16,defaultShader);
+     render.AddModelsAndShader(interiorAsset17,defaultShader);
+     render.AddModelsAndShader(interiorAsset18,defaultShader);
+     render.AddModelsAndShader(TV,defaultShader);
 
 
      render.AddModelsAndShader(dir,lightShader);
@@ -112,26 +175,31 @@ void ApplicationRenderer::Start()
      lightManager.SetUniforms(defaultShader->ID);
 
 
-      Boss = new AudioId("Audio/boss.mp3", Sphere->transform.position);
-      Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
+     
 
-    audioHandler.LoadModelAudio(*Boss);
-    audioHandler.PlayAudio(*Boss);
-    audioHandler.LoadModelAudio(*Jaguar);  
-    audioHandler.PlayAudio(*Jaguar);
-    //
-    audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
-    audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
 
+#pragma region AudioHandler
+
+    // Boss = new AudioId("Audio/boss.mp3", Sphere->transform.position);
+    // Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
+    //audioHandler.LoadModelAudio(*Boss);
+    //audioHandler.PlayAudio(*Boss);
+    //audioHandler.LoadModelAudio(*Jaguar);  
+    //audioHandler.PlayAudio(*Jaguar);
+    ////
+    //audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
+    //audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
+
+#pragma endregion
 
 }
 
 void ApplicationRenderer::PreRender()
 {
-    Sphere->transform.position.x += 5 * deltaTime;
-    audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
+   // Sphere->transform.position.x += 5 * deltaTime;
+   // audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
 
-    audioHandler.UpdatePositionOnChannel(*Boss, Sphere->transform.position);
+   // audioHandler.UpdatePositionOnChannel(*Boss, Sphere->transform.position);
   
 
 
