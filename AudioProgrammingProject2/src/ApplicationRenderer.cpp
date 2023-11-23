@@ -74,9 +74,11 @@ void ApplicationRenderer::Start()
 {
   
      Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
-     Sphere->transform.SetPosition(glm::vec3(5,0,0));
      Sphere->transform.SetScale(glm::vec3(0.25f));
-     Model* dir = new Model(*Sphere);
+
+
+     Sphere2 = new Model(*Sphere);
+     Sphere2->transform.SetScale(glm::vec3(0.25f));
 
    
 
@@ -166,7 +168,7 @@ void ApplicationRenderer::Start()
 
      Light directionLight;
      directionLight.lightType = LightType::DIRECTION_LIGHT;
-     directionLight.lightModel = dir;
+     directionLight.lightModel = Sphere2;
      directionLight.ambient =  glm::vec3(0.5f);
      directionLight.diffuse =  glm::vec3(0.5f);
      directionLight.specular = glm::vec3(0.5f);
@@ -206,7 +208,7 @@ void ApplicationRenderer::Start()
      render.AddModelsAndShader(TV,defaultShader);
 
 
-     render.AddModelsAndShader(dir,lightShader);
+     render.AddModelsAndShader(Sphere2,lightShader);
 #pragma endregion 
 
      //LightRenderer
@@ -220,17 +222,21 @@ void ApplicationRenderer::Start()
 
 #pragma region AudioHandler
 
-     Sphere->transform.SetPosition(glm::vec3(-1, 1.8f, -3.7f));  //TV's Position
+     Sphere->transform.SetPosition(glm::vec3(-1, 1.8f, -3.7f));  //TV's  audio Position
+     Sphere2->transform.SetPosition(glm::vec3(4, 3.5f, -4));     //Door bell's audio Postion
 
      Tv_Sound = new AudioId("Audio/Tv_News.mp3", Sphere->transform.position);
-     Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
-    audioHandler.LoadModelAudio(*Tv_Sound);
+     doorBell_Sound = new AudioId("Audio/doorBell.mp3", Sphere2->transform.position);
+  
    
-
+    audioHandler.LoadModelAudio(*Tv_Sound);
     audioHandler.PlayAudio(*Tv_Sound);
-    audioHandler.SetVolume(*Tv_Sound, 0.1f);
-    audioHandler.LoadModelAudio(*Jaguar);  
- //   audioHandler.PlayAudio(*Jaguar);
+    audioHandler.SetVolume(*Tv_Sound, 0.005f);
+
+
+    audioHandler.LoadModelAudio(*doorBell_Sound, false);  
+    audioHandler.PlayAudio(*doorBell_Sound);
+    audioHandler.SetVolume(*doorBell_Sound, 0.1f);
     ////
     audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
         Plane->meshes[0].vertices, 
@@ -284,6 +290,7 @@ void ApplicationRenderer::PreRender()
     audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
 
     audioHandler.UpdatePositionOnChannel(*Tv_Sound, Sphere->transform.position);
+    audioHandler.UpdatePositionOnChannel(*doorBell_Sound, Sphere2->transform.position);
   
 
 
@@ -382,7 +389,8 @@ void ApplicationRenderer::ProcessInput(GLFWwindow* window)
  {  
          if (key == GLFW_KEY_V && action == GLFW_PRESS)
          {
-           //  audioHandler.audioManager->PlaySoundFile(Boss->audioPath.c_str());
+             audioHandler.PlayAudio(*doorBell_Sound);
+             audioHandler.SetVolume(*doorBell_Sound, 0.1f);
          }
          if (key == GLFW_KEY_B && action == GLFW_PRESS)
          {

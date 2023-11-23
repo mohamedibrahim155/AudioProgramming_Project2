@@ -21,7 +21,7 @@ public:
 
 	void LoadAudios();
 	void LoadModelAudio(const glm::vec3& modelPosition);
-	void LoadModelAudio(AudioId& audio);
+	void LoadModelAudio(AudioId& audio, bool isLooping = true);
 	void PlayAudio(AudioId& audio);
 	void SetVolume(AudioId& audio, const float& volume);
 	void UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp , const float& ModelposX);
@@ -58,6 +58,6 @@ private:
 	std::string audioPath;
 
 
-	glm::vec3 m_Velocity;
+	glm::vec3 m_Velocity = {1,1 ,1 };
 };
 

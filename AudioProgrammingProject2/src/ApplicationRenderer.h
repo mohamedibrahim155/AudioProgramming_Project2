@@ -77,10 +77,11 @@ private:
 
 
 	 Model* Sphere;
+	 Model* Sphere2;
 #pragma endregion
 
 	 AudioId* Tv_Sound;
-	 AudioId* Jaguar;
+	 AudioId* doorBell_Sound;
 
 
 };

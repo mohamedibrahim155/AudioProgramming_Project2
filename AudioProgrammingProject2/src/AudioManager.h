@@ -34,7 +34,7 @@ public:
 	void Destroy();
 
 	void LoadSound(const char* _audioFilePath);
-	void Load3DAudio(const char* file);
+	void Load3DAudio(const char* file, bool isLoop = true);
 
 	void Update();
 

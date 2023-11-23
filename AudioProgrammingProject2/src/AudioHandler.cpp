@@ -31,9 +31,9 @@ void AudioHandler::LoadModelAudio(const glm::vec3& modelPosition)
 	AddDSP(audioPath.c_str());
 }
 
-void AudioHandler::LoadModelAudio(AudioId& audio)
+void AudioHandler::LoadModelAudio(AudioId& audio, bool isLooping)
 {
-	audioManager->Load3DAudio(audio.audioPath.c_str());
+	audioManager->Load3DAudio(audio.audioPath.c_str(), isLooping);
 	audioManager->SetSoundPosition(audio.modelPosition);
 
 	AddDSP(audio.audioPath.c_str());

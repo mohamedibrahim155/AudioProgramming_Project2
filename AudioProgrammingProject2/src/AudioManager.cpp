@@ -57,12 +57,12 @@ void AudioManager::LoadSound(const char* audioFilePath)
 		AddAudioSource(audioFilePath, newSound);
 }
 
-void AudioManager::Load3DAudio(const char* file)
+void AudioManager::Load3DAudio(const char* file ,bool isLoop)
 {
 	FMOD::Sound* newSound = nullptr;
 	Add3DAudioSource(file, newSound);
 
-	FMOD_MODE mode = FMOD_3D | FMOD_LOOP_NORMAL;
+	FMOD_MODE mode = isLoop ? FMOD_3D | FMOD_LOOP_NORMAL : FMOD_3D;
 	_result = _system->createSound(file, mode, 0, &LoadedAudioList[file].audio);   //Create Sound based on stream type
 	if (_result != FMOD_OK)
 	{
@@ -662,8 +662,10 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 
 	FMOD_VECTOR fmodUp;
 	GLMToFMOD(up, fmodUp);
+
 	FMOD_VECTOR fmodForward;
 	GLMToFMOD(forward, fmodForward);
+
 	_result = m_Geometry->setRotation(&fmodForward, &fmodUp);
 	if (_result != FMOD_OK)
 	{
@@ -786,6 +788,7 @@ void  AudioManager::SetVolume(const char* audioFilePath, float volume)
 	{
 		if (LoadedAudioList[audioFilePath].mychannel)
 		{
+			LoadedAudioList[audioFilePath].mychannel->volume = volume;
 				_result = LoadedAudioList[audioFilePath].mychannel->channel->setVolume(volume);
 		}
 	}
