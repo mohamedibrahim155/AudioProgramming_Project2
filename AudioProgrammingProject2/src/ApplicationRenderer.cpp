@@ -85,6 +85,8 @@ void ApplicationRenderer::Start()
      Sphere3 = new Model(*Sphere);
      Sphere3->transform.SetScale(glm::vec3(0.25f));
 
+     Sphere4 = new Model(*Sphere);
+     Sphere4->transform.SetScale(glm::vec3(0.25f));
 
    
 
@@ -126,6 +128,21 @@ void ApplicationRenderer::Start()
      Plane6->transform.SetScale(glm::vec3(5));
      // Plane6->isVisible = false;
 
+     bool isDebugModel = false;
+
+     Sphere->isVisible = isDebugModel;
+     Sphere2->isVisible = isDebugModel;
+     Sphere3->isVisible = isDebugModel;
+     Sphere4->isVisible = isDebugModel;
+
+     Plane->isVisible = isDebugModel;
+     Plane2->isVisible = isDebugModel;
+     Plane3->isVisible = isDebugModel;
+     Plane4->isVisible = isDebugModel;
+     Plane5->isVisible = isDebugModel;
+     Plane6->isVisible = isDebugModel;
+
+
 
      Model* interiorAsset1 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-0.obj", true);
      Model* interiorAsset2 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-1.obj", true);
@@ -148,7 +165,7 @@ void ApplicationRenderer::Start()
      Model* TV = new Model("Models/TV/TV.obj", true);
      Model* Car1 = new Model("Models/Car/Car_1_1.fbx", true);
      Model* Car2 = new Model("Models/Car/Car_3_3.fbx", true);
-      ambulance = new Model("Models/Car/Ambulance.fbx", true);
+     ambulance = new Model("Models/Car/Ambulance.fbx", true);
 
 
       interiorAsset1->transform.SetScale(glm::vec3(5));
@@ -208,6 +225,7 @@ void ApplicationRenderer::Start()
      render.AddModelsAndShader(Sphere, lightShader);
      render.AddModelsAndShader(Sphere2, lightShader);
      render.AddModelsAndShader(Sphere3, lightShader);
+     render.AddModelsAndShader(Sphere4, lightShader);
      //Plane
      render.AddModelsAndShader(Plane, lightShader);
      render.AddModelsAndShader(Plane2, lightShader);
@@ -258,15 +276,18 @@ void ApplicationRenderer::Start()
      Sphere->transform.SetPosition(glm::vec3(-1, 1.8f, -3.7f));  //TV's  audio Position
      Sphere2->transform.SetPosition(glm::vec3(4, 3.5f, -4));     //Door bell's audio Postion
      Sphere3->transform.SetPosition(glm::vec3(4, 0.5f, 1));     //Ambulance's audio Postion
+     Sphere4->transform.SetPosition(glm::vec3(0, 0.5f, 0));     //Car 1's audio Postion
 
      Tv_Sound = new AudioId("Audio/Tv_News.mp3", Sphere->transform.position);
      doorBell_Sound = new AudioId("Audio/doorBell.mp3", Sphere2->transform.position);
      siren_Sound = new AudioId("Audio/Siren.mp3", Sphere3->transform.position);
+     CarStart_Sound = new AudioId("Audio/CarStart.mp3", Sphere4->transform.position);
   
      //SET all the volumes for the
      Tv_Sound->setVolume(0.2f);
      doorBell_Sound->setVolume(0.5f);
      siren_Sound->setVolume(0.25f);
+     CarStart_Sound->setVolume(0.25f);
 
    //TV SOUND 
     audioHandler.LoadModelAudio(*Tv_Sound);
@@ -294,10 +315,9 @@ void ApplicationRenderer::Start()
     // Ambulance Siren Sound 
     audioHandler.LoadModelAudio(*siren_Sound);
 
-    //audioHandler.PlayAudio(*siren_Sound);
-    //audioHandler.SetVolume(*siren_Sound, 0.5f);
-
-
+    //Car start sound
+    audioHandler.LoadModelAudio(*CarStart_Sound,false);
+    audioHandler.AddDSPBasedOnTypeAndOrder(Tv_Sound->audioPath.c_str(), DSPType::LOWPASS, 0);
 
     //// Adding plane's to culling
     audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
@@ -474,6 +494,16 @@ void ApplicationRenderer::ProcessInput(GLFWwindow* window)
                  isActivateSiren = !isActivateSiren;
              }
            
+         }
+         if (key == GLFW_KEY_N && action == GLFW_PRESS)
+         {
+             if (!audioHandler.audioManager->IsChannelPlaying(CarStart_Sound->audioPath.c_str()))
+             {
+                 audioHandler.PlayAudio(*CarStart_Sound);
+                 audioHandler.SetVolume(*CarStart_Sound, CarStart_Sound->volume);
+                 float lowpass = 400;
+                 audioHandler.SetDSPBasedOnType(CarStart_Sound->audioPath.c_str(), DSPType::LOWPASS, lowpass);
+             }
          }
      
  }

@@ -81,6 +81,7 @@ private:
 	 Model* Sphere;
 	 Model* Sphere2;
 	 Model* Sphere3;
+	 Model* Sphere4;
 
 
 	 Model* ambulance;
@@ -89,6 +90,7 @@ private:
 	 AudioId* Tv_Sound;
 	 AudioId* doorBell_Sound;
 	 AudioId* siren_Sound;
+	 AudioId* CarStart_Sound;
 
 
 };
