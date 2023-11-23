@@ -2,6 +2,15 @@
 
 #include "AudioManager.h"
 
+enum  DSPType
+{
+	REVERB = 0,
+	LOWPASS = 1,
+	HIGHPASS = 2,
+	DISTORTION = 3,
+	CHORUS = 4
+
+};
 
 struct AudioId
 {
@@ -10,9 +19,28 @@ struct AudioId
 	{
 	}
 
+	void setOrder(int layer1,int layer2, int layer3, int layer4, int layer5)
+	{
+		order[0] = layer1;
+		order[1] = layer2;
+		order[2] = layer3;
+		order[3] = layer4;
+		order[4] = layer5;
+	}
+	float setVolume(float _volume) 
+	{
+		this->volume = _volume;
+		return volume;
+	}
 	std::string audioPath;
 	glm::vec3 modelPosition;
+	float volume = 1.0f;
+	int order[5] = { REVERB,LOWPASS,HIGHPASS,DISTORTION,CHORUS };
 };
+
+
+
+
 class AudioHandler
 {
 public:
@@ -33,9 +61,11 @@ public:
 
 
 	void AddDSP(const char* audioPath);
+	void AddDSPBasedOnTypeAndOrder(const char* audioPath, const DSPType& type, const int order);
 	void SetDSP(const char* audioPath);
+	void SetDSPBasedOnType(const char* audioPath, const DSPType& type,  float& value,  float value2 = 1.0f,  float value3 = 1.0f);
 
-	void UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position);
+	void UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position, const glm::vec3 velocity = {1,1,1});
 
 
 	float gDecayValue = .1f;
@@ -58,6 +88,6 @@ private:
 	std::string audioPath;
 
 
-	glm::vec3 m_Velocity = {1,1 ,1 };
+	glm::vec3 m_Velocity = {0,0 ,0 };
 };
 

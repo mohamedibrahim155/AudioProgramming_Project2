@@ -81,7 +81,7 @@ public:
 
 
 	void SetSoundPosition(const glm::vec3& modelPosition);
-	void SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position);
+	void SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position, const glm::vec3 velocity = {1,1,1});
 
 	int AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale);
 	int AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& up, const glm::vec3& forward);
@@ -101,6 +101,7 @@ private:
 	bool IsChannelPlaying(FMOD_RESULT result, FMOD::Channel* currentChannel);
 
 	
+	std::vector<FMOD::DSP* > DSPList;
 
 	FMOD::DSP* m_ReverbDSP;
 	FMOD::DSP* m_HighPassDSP;

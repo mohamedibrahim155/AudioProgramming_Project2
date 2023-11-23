@@ -62,6 +62,8 @@ private:
 
 	 bool firstMouse;
 
+	 bool isActivateSiren;
+
 	 AudioHandler audioHandler;
 
 
@@ -78,10 +80,15 @@ private:
 
 	 Model* Sphere;
 	 Model* Sphere2;
+	 Model* Sphere3;
+
+
+	 Model* ambulance;
 #pragma endregion
 
 	 AudioId* Tv_Sound;
 	 AudioId* doorBell_Sound;
+	 AudioId* siren_Sound;
 
 
 };

@@ -48,6 +48,11 @@ void AudioManager::Initialize()
 	}
 
 
+
+	DSPList.push_back(m_ReverbDSP);
+	DSPList.push_back(m_LowPassDSP);
+	DSPList.push_back(m_HighPassDSP);
+	DSPList.push_back(m_ChorusPassDSP);
 }
 
 void AudioManager::LoadSound(const char* audioFilePath)
@@ -193,6 +198,14 @@ void AudioManager::Play3DAudioSound(const char* audioFileName)
 		}
 
 		//SetListenerAttributes(glm::vec3(0), glm::vec3(0), glm::vec3(0, 0, 1), glm::vec3(0, 1, 0));
+		float maxDistance = 1; // Adjust this value based on your requirements
+		_result =_system->set3DSettings(1.0f, maxDistance, 1.0f);
+		if (_result != FMOD_OK)
+		{
+			FMODError(_result, __FILE__, __LINE__);
+			std::cout << "Failed to Play3DAudioSound set3DSettings : " << std::endl;
+			return;
+		}
 		 soundVel = { 0.f, 0.f, 0.f };
 
 		_result = LoadedAudioList[audioFileName].mychannel->channel->set3DAttributes(&soundPos, &soundVel);
@@ -530,6 +543,7 @@ void AudioManager::SetListenerAttributes(const glm::vec3& position, const glm::v
 	GLMToFMOD(up, fmodUp);
 
 	FMOD_RESULT result = _system->set3DListenerAttributes(0, &fmodPosition, &fmodVelocity, &fmodForward, &fmodUp);
+	
 	if (_result != FMOD_OK)
 	{
 		FMODError(_result, __FILE__, __LINE__);
@@ -697,13 +711,17 @@ void AudioManager::SetSoundPosition(const glm::vec3& modelPosition)
 	GLMToFMOD(modelPosition, soundPos);
 }
 
-void AudioManager::SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position)
+void AudioManager::SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position, const glm::vec3 velocity)
 {
 	if (LoadedAudioList.find(audioFilename)!=LoadedAudioList.end())
 	{
+		//float dopplerScale = 1000; // Adjust this value based on your requirements
+		//_system->set3DSettings(dopplerScale, 10, 1.0f);
 		FMOD_VECTOR fmodPosition;
-		FMOD_VECTOR fmodVelocity = { 5.0f, 0.0f, 0.0f };
 		GLMToFMOD(position, fmodPosition);
+		FMOD_VECTOR fmodVelocity;
+		GLMToFMOD(velocity, fmodVelocity);
+
 		FMOD_RESULT result = LoadedAudioList[audioFilename].mychannel->channel->set3DAttributes(&fmodPosition, &fmodVelocity);
 		if (_result != FMOD_OK)
 		{
@@ -711,6 +729,7 @@ void AudioManager::SetPositionAttributeonChannel(const char* audioFilename, cons
 			std::cout << "Error: Failed to SetPositionAttributeonChannel in the allocated filePath  " << std::endl;
 			return;
 		}
+		
 	}
 }
 
@@ -943,6 +962,15 @@ void AudioManager::Destroy()
 	{
 		_system->release();
 		_system = nullptr;
+	}
+
+	for (FMOD::DSP* dsp : DSPList)
+	{
+		if (dsp)
+		{
+			dsp->release();
+		}
+		delete dsp;
 	}
 }
 

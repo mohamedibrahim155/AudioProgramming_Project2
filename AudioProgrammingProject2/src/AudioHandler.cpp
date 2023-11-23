@@ -36,12 +36,13 @@ void AudioHandler::LoadModelAudio(AudioId& audio, bool isLooping)
 	audioManager->Load3DAudio(audio.audioPath.c_str(), isLooping);
 	audioManager->SetSoundPosition(audio.modelPosition);
 
-	AddDSP(audio.audioPath.c_str());
+	//AddDSP(audio.audioPath.c_str());
 }
 
 void AudioHandler::PlayAudio(AudioId& audio)
 {
 	audioManager->Play3DAudioSound(audio.audioPath.c_str());
+	
 }
 
 void AudioHandler::SetVolume(AudioId& audio, const float& volume)
@@ -52,8 +53,6 @@ void AudioHandler::SetVolume(AudioId& audio, const float& volume)
 void AudioHandler::UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp, const float& ModelposX)
 {
 	audioManager->SetListenerAttributes(camPos, m_Velocity, camFront, camUp);
-
-//	SetDSP(audioPath.c_str());
 
 	audioManager->Update();
 }
@@ -87,6 +86,29 @@ void AudioHandler::AddDSP(const char* audioPath)
 	audioManager->AddChorusPassOnChannel(4, audioPath);
 }
 
+void AudioHandler::AddDSPBasedOnTypeAndOrder(const char* audioPath, const DSPType& type, const int order)
+{
+	switch (type)
+	{
+	case DSPType::REVERB:
+		audioManager->AddReverbFilterOnChannel(order, audioPath);
+		break;
+	case DSPType::LOWPASS:
+		audioManager->AddLowPassFilterOnChannel(order, audioPath);
+		break;
+	case DSPType::HIGHPASS:
+		audioManager->AddHighPassFilterOnChannel(order, audioPath);
+		break;
+	case DSPType::DISTORTION:
+		audioManager->AddDistortionFilterOnChannel(order, audioPath);
+		break;
+	case DSPType::CHORUS:
+		audioManager->AddChorusPassOnChannel(order, audioPath);
+		break;
+
+	}
+}
+
 void AudioHandler::SetDSP(const char* audioPath)
 {
 	audioManager->SetReverbValuesOnChannel(audioPath, gDecayValue, gDensityValue, gDiffusionValue);
@@ -96,7 +118,29 @@ void AudioHandler::SetDSP(const char* audioPath)
 	audioManager->SetChorusPassValuesOnChannel(audioPath,gChorusMixValue, gChorusRateValue, gChorusDepthValue);
 }
 
-void AudioHandler::UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position)
+void AudioHandler::SetDSPBasedOnType(const char* audioPath, const DSPType& type,  float& value,  float value2 ,  float value3)
 {
-	audioManager->SetPositionAttributeonChannel(audio.audioPath.c_str(), position);
+	switch (type)
+	{
+	case DSPType::REVERB:
+		audioManager->SetReverbValuesOnChannel(audioPath, value, value2, value3);
+		break;
+	case DSPType::LOWPASS:
+		audioManager->SetLowPassFilterValuesOnChannel(audioPath, value);
+		break;
+	case DSPType::HIGHPASS:
+		audioManager->SetHighPassFilterValuesOnChannel(audioPath, value);
+		break;
+	case DSPType::DISTORTION:
+		audioManager->SetDistortionLevelFilterValuesOnChannel(audioPath, value);
+		break;
+	case DSPType::CHORUS:
+		audioManager->SetChorusPassValuesOnChannel(audioPath, value, value2, value3);
+		break;
+	}
+}
+
+void AudioHandler::UpdatePositionOnChannel(AudioId& audio, const glm::vec3 position, const glm::vec3 velocity)
+{
+	audioManager->SetPositionAttributeonChannel(audio.audioPath.c_str(), position, velocity);
 }
