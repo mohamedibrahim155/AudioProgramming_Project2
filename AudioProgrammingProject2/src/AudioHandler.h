@@ -23,9 +23,11 @@ public:
 	void LoadModelAudio(const glm::vec3& modelPosition);
 	void LoadModelAudio(AudioId& audio);
 	void PlayAudio(AudioId& audio);
+	void SetVolume(AudioId& audio, const float& volume);
 	void UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp , const float& ModelposX);
 
 	void AddPolygonToManager(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale = { 1.0f,1.0f,1.0f });
+	void AddPolygonToManagerWithRotation(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale = { 1.0f,1.0f,1.0f }, const glm::vec3 up = { 0.0f,1.0f,0.0f }, const glm::vec3 forward = {0.0f,0.0f,1.0f} );
 
 
 

@@ -74,19 +74,50 @@ void ApplicationRenderer::Start()
 {
   
      Sphere = new Model((char*)"Models/DefaultSphere/Sphere_1_unit_Radius.ply",true);
-     Sphere->transform.position.x += 5;
-
+     Sphere->transform.SetPosition(glm::vec3(5,0,0));
+     Sphere->transform.SetScale(glm::vec3(0.25f));
      Model* dir = new Model(*Sphere);
-     dir->isVisible = false;
+
    
 
      Plane = new Model((char*)"Models/Plane/Plane.obj", true);
-     Plane->transform.position.x -= 2;
-     Plane->transform.scale = glm::vec3(3.0f);
+     Plane->transform.SetPosition(glm::vec3(-5, 1, 0));
+     Plane->transform.SetScale(glm::vec3(5));
+    // Plane->isVisible = false;
 
      Plane2 = new Model((char*)"Models/Plane/Plane.obj", true);
-     Plane2->transform.position.x += 10;
-     Plane2->transform.scale = glm::vec3(3.0f);
+     Plane2->transform.SetPosition(glm::vec3(0, 1, -5));
+     Plane2->transform.SetRotation(glm::vec3(0, 90, 0));
+     Plane2->transform.SetScale(glm::vec3(5));
+    // Plane2->isVisible = false;
+
+
+     Plane3 = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane3->transform.SetPosition(glm::vec3(0, 1, 5));
+     Plane3->transform.SetRotation(glm::vec3(0, 90, 0));
+     Plane3->transform.SetScale(glm::vec3(5));
+   //  Plane3->isVisible = false;
+
+     Plane4 = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane4->transform.SetPosition(glm::vec3(5, 1, 0));
+     Plane4->transform.SetRotation(glm::vec3(0, 0, 0));
+     Plane4->transform.SetScale(glm::vec3(5));
+    // Plane4->isVisible = false;
+
+
+     Plane5 = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane5->transform.SetPosition(glm::vec3(0, 5.5f, 0));
+     Plane5->transform.SetRotation(glm::vec3(0, 0, 90));
+     Plane5->transform.SetScale(glm::vec3(5));
+     // Plane5->isVisible = false;
+
+
+     Plane6 = new Model((char*)"Models/Plane/Plane.obj", true);
+     Plane6->transform.SetPosition(glm::vec3(0, -0.5f, 0));
+     Plane6->transform.SetRotation(glm::vec3(0, 0, 90));
+     Plane6->transform.SetScale(glm::vec3(5));
+     // Plane6->isVisible = false;
+
 
      Model* interiorAsset1 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-0.obj", true);
      Model* interiorAsset2 = new Model("Models/Free Sample/House Interior Rooms - Free Sample-1.obj", true);
@@ -109,29 +140,29 @@ void ApplicationRenderer::Start()
      Model* TV = new Model("Models/TV/TV.obj", true);
 
 
-     interiorAsset1->transform.SetScale(glm::vec3(3));
-     interiorAsset2->transform.SetScale(glm::vec3(3));
-     interiorAsset3->transform.SetScale(glm::vec3(3));
-     interiorAsset4->transform.SetScale(glm::vec3(3));
-     interiorAsset5->transform.SetScale(glm::vec3(3));
-     interiorAsset6->transform.SetScale(glm::vec3(3));
-     interiorAsset7->transform.SetScale(glm::vec3(3));
-     interiorAsset8->transform.SetScale(glm::vec3(3));
-     interiorAsset9->transform.SetScale(glm::vec3(3));
-     interiorAsset10->transform.SetScale(glm::vec3(3));
-     interiorAsset11->transform.SetScale(glm::vec3(3));
-     interiorAsset12->transform.SetScale(glm::vec3(3));
-     interiorAsset13->transform.SetScale(glm::vec3(3));
-     interiorAsset14->transform.SetScale(glm::vec3(3));
-     interiorAsset15->transform.SetScale(glm::vec3(3));
-     interiorAsset16->transform.SetScale(glm::vec3(3));
-     interiorAsset17->transform.SetScale(glm::vec3(3));
-     interiorAsset18->transform.SetScale(glm::vec3(3));
+      interiorAsset1->transform.SetScale(glm::vec3(5));
+      interiorAsset2->transform.SetScale(glm::vec3(5));
+      interiorAsset3->transform.SetScale(glm::vec3(5));
+      interiorAsset4->transform.SetScale(glm::vec3(5));
+      interiorAsset5->transform.SetScale(glm::vec3(5));
+      interiorAsset6->transform.SetScale(glm::vec3(5));
+      interiorAsset7->transform.SetScale(glm::vec3(5));
+      interiorAsset8->transform.SetScale(glm::vec3(5));
+      interiorAsset9->transform.SetScale(glm::vec3(5));
+     interiorAsset10->transform.SetScale(glm::vec3(5));
+     interiorAsset11->transform.SetScale(glm::vec3(5));
+     interiorAsset12->transform.SetScale(glm::vec3(5));
+     interiorAsset13->transform.SetScale(glm::vec3(5));
+     interiorAsset14->transform.SetScale(glm::vec3(5));
+     interiorAsset15->transform.SetScale(glm::vec3(5));
+     interiorAsset16->transform.SetScale(glm::vec3(5));
+     interiorAsset17->transform.SetScale(glm::vec3(5));
+     interiorAsset18->transform.SetScale(glm::vec3(5));
 
      //TV Model
-     TV->transform.SetPosition(glm::vec3(-0.5f,1.1f,-2.1f));
+     TV->transform.SetPosition(glm::vec3(-1,1.7f,-4));
      TV->transform.SetRotation(glm::vec3(0, -90, 0));
-     TV->transform.SetScale(glm::vec3(10));
+     TV->transform.SetScale(glm::vec3(15));
 
      Light directionLight;
      directionLight.lightType = LightType::DIRECTION_LIGHT;
@@ -141,10 +172,19 @@ void ApplicationRenderer::Start()
      directionLight.specular = glm::vec3(0.5f);
 
 
+#pragma region Mesh Renderer
+
+
      //Mesh Renderer
+
+     //Plane
      render.AddModelsAndShader(Sphere, lightShader);
      render.AddModelsAndShader(Plane, lightShader);
      render.AddModelsAndShader(Plane2, lightShader);
+     render.AddModelsAndShader(Plane3, lightShader);
+     render.AddModelsAndShader(Plane4, lightShader);
+     render.AddModelsAndShader(Plane5, lightShader);
+     render.AddModelsAndShader(Plane6, lightShader);
 
      render.AddModelsAndShader(interiorAsset1,defaultShader);
      render.AddModelsAndShader(interiorAsset2,defaultShader);
@@ -167,7 +207,7 @@ void ApplicationRenderer::Start()
 
 
      render.AddModelsAndShader(dir,lightShader);
-  
+#pragma endregion 
 
      //LightRenderer
      lightManager.AddNewLight(directionLight);
@@ -180,15 +220,59 @@ void ApplicationRenderer::Start()
 
 #pragma region AudioHandler
 
-    // Boss = new AudioId("Audio/boss.mp3", Sphere->transform.position);
-    // Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
-    //audioHandler.LoadModelAudio(*Boss);
-    //audioHandler.PlayAudio(*Boss);
-    //audioHandler.LoadModelAudio(*Jaguar);  
-    //audioHandler.PlayAudio(*Jaguar);
+     Sphere->transform.SetPosition(glm::vec3(-1, 1.8f, -3.7f));  //TV's Position
+
+     Tv_Sound = new AudioId("Audio/Tv_News.mp3", Sphere->transform.position);
+     Jaguar = new AudioId("Audio/jaguar.wav", dir->transform.position);
+    audioHandler.LoadModelAudio(*Tv_Sound);
+   
+
+    audioHandler.PlayAudio(*Tv_Sound);
+    audioHandler.SetVolume(*Tv_Sound, 0.1f);
+    audioHandler.LoadModelAudio(*Jaguar);  
+ //   audioHandler.PlayAudio(*Jaguar);
     ////
-    //audioHandler.AddPolygonToManager(1, 1, true, Plane->meshes[0].vertices, Plane->transform.position, Plane->transform.scale);
-    //audioHandler.AddPolygonToManager(1, 1, true, Plane2->meshes[0].vertices, Plane2->transform.position, Plane2->transform.position);
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
+        Plane->meshes[0].vertices, 
+        Plane->transform.position,
+        Plane->transform.scale,
+        Plane->transform.GetUp(),
+        Plane->transform.GetForward());
+
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
+        Plane2->meshes[0].vertices,
+        Plane2->transform.position,
+        Plane2->transform.scale,
+        Plane2->transform.GetUp(), 
+        Plane2->transform.GetForward());
+
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
+        Plane3->meshes[0].vertices,
+        Plane3->transform.position,
+        Plane3->transform.scale,
+        Plane3->transform.GetUp(), 
+        Plane3->transform.GetForward());
+
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
+        Plane4->meshes[0].vertices, 
+        Plane4->transform.position, 
+        Plane4->transform.scale,
+        Plane4->transform.GetUp(), 
+        Plane4->transform.GetForward());
+
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true, 
+        Plane5->meshes[0].vertices,
+        Plane5->transform.position,
+        Plane5->transform.scale,
+        Plane5->transform.GetUp(),
+        Plane5->transform.GetForward());
+
+    audioHandler.AddPolygonToManagerWithRotation(1, 1, true,
+        Plane6->meshes[0].vertices,
+        Plane6->transform.position, 
+        Plane6->transform.scale,
+        Plane6->transform.GetUp(), 
+        Plane6->transform.GetForward());
 
 #pragma endregion
 
@@ -197,9 +281,9 @@ void ApplicationRenderer::Start()
 void ApplicationRenderer::PreRender()
 {
    // Sphere->transform.position.x += 5 * deltaTime;
-   // audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
+    audioHandler.UpdateListenerPosition(camera.Position, -camera.Front, camera.Up, -1.0f);
 
-   // audioHandler.UpdatePositionOnChannel(*Boss, Sphere->transform.position);
+    audioHandler.UpdatePositionOnChannel(*Tv_Sound, Sphere->transform.position);
   
 
 
@@ -266,7 +350,7 @@ void ApplicationRenderer::ProcessInput(GLFWwindow* window)
     float cameraSpeed=25;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
     {
-        std::cout << "W pressed " << std::endl;
+      
 
         camera.ProcessKeyboard(FORWARD, deltaTime * cameraSpeed);
     }

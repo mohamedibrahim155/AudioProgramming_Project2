@@ -69,10 +69,17 @@ private:
 #pragma region Models
 	 Model* Plane;
 	 Model* Plane2;
+	 Model* Plane3;
+	 Model* Plane4;
+	 Model* Plane5;
+	 Model* Plane6;
+
+
+
 	 Model* Sphere;
 #pragma endregion
 
-	 AudioId* Boss;
+	 AudioId* Tv_Sound;
 	 AudioId* Jaguar;
 
 

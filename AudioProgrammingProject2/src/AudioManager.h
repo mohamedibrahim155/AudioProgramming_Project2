@@ -84,6 +84,7 @@ public:
 	void SetPositionAttributeonChannel(const char* audioFilename, const glm::vec3& position);
 
 	int AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale);
+	int AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& up, const glm::vec3& forward);
 
 
 private:

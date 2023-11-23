@@ -44,6 +44,11 @@ void AudioHandler::PlayAudio(AudioId& audio)
 	audioManager->Play3DAudioSound(audio.audioPath.c_str());
 }
 
+void AudioHandler::SetVolume(AudioId& audio, const float& volume)
+{
+	audioManager->SetVolume(audio.audioPath.c_str(), volume);
+}
+
 void AudioHandler::UpdateListenerPosition(const glm::vec3& camPos, const glm::vec3& camFront, const glm::vec3 camUp, const float& ModelposX)
 {
 	audioManager->SetListenerAttributes(camPos, m_Velocity, camFront, camUp);
@@ -56,6 +61,16 @@ void AudioHandler::UpdateListenerPosition(const glm::vec3& camPos, const glm::ve
 void AudioHandler::AddPolygonToManager(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale)
 {
 	int result = audioManager->AddPolygon(direct, reverb, doublesided, vertices, position, scale);
+
+	if (result == -1)
+	{
+		std::cout << "Error in addPolygon in AudiHandler..  " << std::endl;
+	}
+}
+
+void AudioHandler::AddPolygonToManagerWithRotation(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3 scale, const glm::vec3 up, const glm::vec3 forward)
+{
+	int result = audioManager->AddPolygon(direct, reverb, doublesided, vertices, position, scale,up,forward);
 
 	if (result == -1)
 	{

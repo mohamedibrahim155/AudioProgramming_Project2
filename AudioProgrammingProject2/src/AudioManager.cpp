@@ -32,18 +32,7 @@ void AudioManager::Initialize()
 		return;
 	}
 
-	_result = _system->setGeometrySettings(2000.0f); /// SET GEOMENTRY
-	if (_result != FMOD_OK)
-	{
-		std::cout << "Error : Failed to setGeomentry system " << std::endl;
-
-		_result = _system->close();
-		if (_result != FMOD_OK)
-		{
-			std::cout << "Error : Failed to Close the system" << std::endl;
-		}
-		return;
-	}
+	
 	//_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
 
 	if (_result != FMOD_OK)
@@ -572,7 +561,18 @@ void AudioManager::FMODToGLM(const FMOD_VECTOR& in, glm::vec3& out)
 
 int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale)
 {
-	
+	_result = _system->setGeometrySettings(500); /// SET GEOMENTRY
+	if (_result != FMOD_OK)
+	{
+		std::cout << "Error : Failed to setGeomentry system " << std::endl;
+
+		_result = _system->close();
+		if (_result != FMOD_OK)
+		{
+			std::cout << "Error : Failed to Close the system" << std::endl;
+		}
+		return -1;
+	}
 	int index;
 	_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
 	// Add the polygon
@@ -612,6 +612,78 @@ int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const
 	}
 
 	
+
+	m_Geometry->setActive(true);
+
+	return index;
+}
+
+int AudioManager::AddPolygon(float direct, float reverb, bool doublesided, const std::vector<Vertex>& vertices, const glm::vec3& position, const glm::vec3& scale, const glm::vec3& up, const glm::vec3& forward)
+{
+	_result = _system->setGeometrySettings(500); /// SET GEOMENTRY
+	if (_result != FMOD_OK)
+	{
+		std::cout << "Error : Failed to setGeomentry system " << std::endl;
+
+		_result = _system->close();
+		if (_result != FMOD_OK)
+		{
+			std::cout << "Error : Failed to Close the system" << std::endl;
+		}
+		return -1;
+	}
+	int index;
+	_result = _system->createGeometry(200, 800, &m_Geometry);  ///CREATE GEOMENTRY
+	// Add the polygon
+	int numVertices = vertices.size();
+	FMOD_VECTOR* fmodVertices = (FMOD_VECTOR*)malloc(sizeof(FMOD_VECTOR) * numVertices);
+	for (int i = 0; i < numVertices; i++) {
+		GLMToFMOD(vertices[i].Position, fmodVertices[i]);
+	}
+
+	_result = m_Geometry->addPolygon(direct, reverb, doublesided, numVertices, fmodVertices, &index);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon in the allocated filePath  " << std::endl;
+		return -1;
+	}
+
+	// Set the position
+	FMOD_VECTOR fmodPosition;
+	GLMToFMOD(position, fmodPosition);
+	_result = m_Geometry->setPosition(&fmodPosition);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon -> setPosition in the allocated filePath  " << std::endl;
+		return-1;
+	}
+
+	FMOD_VECTOR fmodUp;
+	GLMToFMOD(up, fmodUp);
+	FMOD_VECTOR fmodForward;
+	GLMToFMOD(forward, fmodForward);
+	_result = m_Geometry->setRotation(&fmodForward, &fmodUp);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon -> setRotation in the allocated filePath  " << std::endl;
+		return-1;
+	}
+
+
+	FMOD_VECTOR fmodScale;
+	GLMToFMOD(scale, fmodScale);
+	_result = m_Geometry->setScale(&fmodScale);
+	if (_result != FMOD_OK)
+	{
+		FMODError(_result, __FILE__, __LINE__);
+		std::cout << "Error: Failed to AddPolygon -> setScale in the allocated filePath  " << std::endl;
+		return-1;
+	}
+
+
 
 	m_Geometry->setActive(true);
 
