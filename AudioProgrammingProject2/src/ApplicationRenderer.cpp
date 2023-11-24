@@ -375,12 +375,18 @@ void ApplicationRenderer::PreRender()
     audioHandler.UpdatePositionOnChannel(*doorBell_Sound, Sphere2->transform.position);
    
   
-    if (glm::distance(ambulance->transform.position, glm::vec3(-20, 0.5f,1))>0.5f && isActivateSiren)
+    if (glm::distance(ambulance->transform.position, glm::vec3(-15, 0.5f,1))>0.5f && isActivateSiren)
     {
         Sphere3->transform.position.x -= ambulanceSpeed * deltaTime;
         ambulance->transform.position.x -= ambulanceSpeed * deltaTime;
         audioHandler.UpdatePositionOnChannel(*siren_Sound, Sphere3->transform.position, glm::vec3(45,45,45));
     }
+    else if (glm::distance(ambulance->transform.position, glm::vec3(-15, 0.5f, 1)) < 0.5f && isActivateSiren)
+    {
+        audioHandler.audioManager->StopSound(siren_Sound->audioPath.c_str());
+        isActivateSiren = false;
+    }
+
 
 
 }

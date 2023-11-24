@@ -773,7 +773,7 @@ void AudioManager::StopSound(const char* audioFileName)
 		if (LoadedAudioList[audioFileName].mychannel)
 		{
 				_result = LoadedAudioList[audioFileName].mychannel->channel->stop();
-				_result = LoadedAudioList[audioFileName].audio->release();
+				//_result = LoadedAudioList[audioFileName].audio->release();
 		}
 	}
 	else
