@@ -61,8 +61,9 @@ private:
 	 float lastFrame;
 
 	 bool firstMouse;
-
 	 bool isActivateSiren;
+
+	 float ambulanceSpeed = 2.0f;
 
 	 AudioHandler audioHandler;
 

@@ -377,9 +377,9 @@ void ApplicationRenderer::PreRender()
   
     if (glm::distance(ambulance->transform.position, glm::vec3(-20, 0.5f,1))>0.5f && isActivateSiren)
     {
-        Sphere3->transform.position.x -= 0.5f * deltaTime;
-        ambulance->transform.position.x -= 0.5f * deltaTime;
-        audioHandler.UpdatePositionOnChannel(*siren_Sound, Sphere3->transform.position, glm::vec3(100,0,0));
+        Sphere3->transform.position.x -= ambulanceSpeed * deltaTime;
+        ambulance->transform.position.x -= ambulanceSpeed * deltaTime;
+        audioHandler.UpdatePositionOnChannel(*siren_Sound, Sphere3->transform.position, glm::vec3(45,45,45));
     }
 
 
